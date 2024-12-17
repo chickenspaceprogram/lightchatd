@@ -2,7 +2,9 @@
 
 ## Introduction
 
-This is UNFINISHED as of writing (17 Dec 2024). It will change.
+This is UNFINISHED as of writing (17 Dec 2024). It will change as I implement `chatservd` and realize what's easy to parse.
+
+Specifically, the versioning system is all but guaranteed to change.
 
 This protocol is perhaps not specified as good as it could be. This is because, at some point, I plan to turn the core of `lightchat` into a proper IRC server daemon, and that would obviously use the IRC protocol. Given that this protocol is so simple, the lack of detail is probably not an issue.
 
