@@ -110,6 +110,20 @@ LIGHTCHAT/0.0 PONG
 ### Server-sent commands
 
 ~~~
+Command: MSG
+Parameters: <uname>
+            <msg-text>
+
+This command sends a message to all users connected to the server.
+
+<uname> ::= [^\0\r\n\t\f\v ]+
+
+Example usage:
+
+LIGHTCHAT/0.0 MSG bar:this is a message!
+~~~
+
+~~~
 Command: OK
 Parameters: <command>
             [response]
