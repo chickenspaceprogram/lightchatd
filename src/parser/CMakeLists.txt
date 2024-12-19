@@ -3,13 +3,15 @@
 #  file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 cmake_minimum_required(VERSION 3.15)
-project(
-    chatservd
-    VERSION 0.1
-    DESCRIPTION "A multithreaded chat server daemon, written in C."
-    LANGUAGES CXX
+
+add_library(parser
+    parser.cpp
+    parser.hpp
 )
 
-set(CMAKE_CXX_STANDARD 11)
+add_executable(TEST-parser tests/TEST-parser.cpp)
 
-add_subdirectory(src)
+add_test(
+    NAME parser
+    COMMAND $<TARGET_FILE:TEST-parser>
+)

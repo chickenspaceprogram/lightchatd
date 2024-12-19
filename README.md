@@ -1,6 +1,6 @@
 # lightchatd
 
-A lightweight, multithreaded chat server, written in C.
+A lightweight, multithreaded chat server, written in C++ (honestly it's mostly just C with classes, all I wanted was a hashmap).
 
 For a description of the `lightchat` protocol that this server uses, check out protocol.md.
 

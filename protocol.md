@@ -27,11 +27,11 @@ The grammar of a message in pseudo-BNF is as follows. Regular expressions are de
 <command> ::= /[A-Z][A-Z0-9]*/
 
 <args> ::= <arg> <args> | <text>
-<arg> ::= / [^\0\r\n ]+/
+<arg> ::= / [^\0\r\n: ]+/
 <text> ::= /:[^\0\r\n]+/ | ""
 ~~~
 
-For those not familiar with BNF, a message will roughly look like either of the following (assuming that the lines are terminated with a Windows-style CRLF):
+If you are not familiar with BNF, a message will roughly look like the following (assuming that the lines are terminated with a Windows-style CRLF):
 
 ~~~
 LIGHTCHAT/0.0 COMMAND1 ARG1 ARG_2:3ARG
@@ -154,7 +154,8 @@ UNAME-IN-USE:The username you provided is already in use.
 UNAME-BAD-CHARS:The username provided contained invalid characters.
 BAD-COMMAND:The command provided was invalid.
 BAD-PARAMS:Invalid parameters were provided with your command.
-BAD-VERSION:Your client protocol version is invalid. Maybe switch protocols?
+BAD-VERSION:Your client protocol version is invalid. Maybe switch protocols?'
+PARSE-ERROR:Your request could not be parsed properly.
 ~~~
 
 ~~~
