@@ -9,7 +9,7 @@ project(
     DESCRIPTION "A multithreaded chat server daemon, written in C."
     LANGUAGES CXX
 )
-
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(src)

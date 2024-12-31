@@ -4,8 +4,7 @@
     file, You can obtain one at https://mozilla.org/MPL/2.0/.
 */
 
-#ifndef PARSER_PARSER_HPP
-#define PARSER_PARSER_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -19,5 +18,3 @@ typedef struct message {
 
 // returns -1 on error, 0 on success
 int parse_message(const std::string &message_text, Message &msg);
-
-#endif
