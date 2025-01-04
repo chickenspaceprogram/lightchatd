@@ -8,8 +8,10 @@
 
 class DataBuf {
     public:
-        DataBuf() : len(0), buf(NULL) {}
+        DataBuf() : buf(NULL), len(0) {}
         DataBuf(size_t len);
+        DataBuf(DataBuf &dbuf) = delete; // copying is expensive and i want compiler errors if i try to do it
+        DataBuf(DataBuf &&dbuf) : buf(dbuf.buf), len(dbuf.len) {} // moving is fine, this shouldn't cause use-after-frees since ownership is transferred
 
         ~DataBuf();
 

@@ -2,17 +2,18 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-#include "safesock.hpp"
+#include "databuf.hpp"
 #include <stdlib.h>
 #include <fcntl.h>
 #include <sys/fcntl.h>
 #include <sys/errno.h>
+#include <new>
 
 DataBuf::DataBuf(size_t len) : len(len) {
     buf = (char *)malloc(len);
     if (buf == NULL) {
         std::bad_alloc err;
-        throw err;
+        throw err; // exceptions are evil, but if malloc fails... i have bigger problems
     }
 }
 
@@ -31,16 +32,4 @@ void DataBuf::setSize(size_t len) {
 
 DataBuf::~DataBuf() {
     free(buf);
-}
-
-int SafeSock::send(std::string msg) {
-    errno = 0;
-    std::unique_lock<std::mutex> fd_lock{fd_mutex};
-    int fd_flags = fcntl(fd, F_GETFL, 0);
-    if (errno != 0) {
-        return -1;
-    }
-    fd_flags |= O_NONBLOCK;
-    fcntl(fd, F_SETFL, fd_flags); // fd is now nonblocking
-    
 }
