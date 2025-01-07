@@ -14,8 +14,8 @@ class MsgSender {
         MsgSender();
         ~MsgSender();
         void send(int fd, DataBuf &msg);
-        void add(int fd);
-        void remove(int fd);
+        int add(int fd);
+        int remove(int fd);
     private:
         std::unordered_map<int, MsgQueue> queue_map;
         int epoll_fd;

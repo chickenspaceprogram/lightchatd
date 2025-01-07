@@ -5,9 +5,9 @@
 #include "msgsender.hpp"
 #include <sys/epoll.h>
 #include <unistd.h>
+#include <sys/errno.h>
 
-
-static const struct epoll_event EPOLL_WRITE_EVENT = {.events = EPOLLOUT | EPOLLRDHUP | EPOLLET};
+#define EPOLL_WRITE_EVENT(fd_value)  {.events = EPOLLOUT | EPOLLRDHUP | EPOLLET, .data = {.fd = (int)(fd_value)}} // on a write event for this fd, this struct will get returned by epoll and we want to know which fd it is
 
 
 MsgSender::MsgSender() {
@@ -16,4 +16,11 @@ MsgSender::MsgSender() {
 
 MsgSender::~MsgSender() {
     close(epoll_fd);
+}
+
+int  MsgSender::add(int fd) {
+    errno = 0;
+    queue_map.emplace(fd, fd); // hopefully maybe works idk
+    struct epoll_event fd_event = EPOLL_WRITE_EVENT(fd);
+    return epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &fd_event);
 }

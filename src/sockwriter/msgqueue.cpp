@@ -43,14 +43,19 @@ MsgSendStatus MsgQueue::trySendMsg() {
     }
     
     errno = 0;
-    ssize_t bytes_sent = send(fd, (void *)queue.front().buf, queue.front().getSize(), 0);
-    if (bytes_sent == -1) {
+    ssize_t bytes_sent = send(fd, (void *)(queue.front().buf + queue.front().index), queue.front().getSize() - queue.front().index, 0);
+    if (bytes_sent < 0) {
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
             return MsgSendStatus::SendWouldBlock;
         }
         else {
-            return MsgSendStatus::Error;
+            throw std::system_error(errno, std::generic_category());
         }
+    }
+
+    if ((size_t)bytes_sent != queue.front().getSize() - queue.front().index) { // typecast that ignores warnings will never backfire ever don't worry :3
+        queue.front().index += bytes_sent;
+        return MsgSendStatus::NotFullySent;
     }
 
     queue.pop();
