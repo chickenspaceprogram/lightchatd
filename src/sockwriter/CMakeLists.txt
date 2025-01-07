@@ -4,12 +4,16 @@
 
 cmake_minimum_required(VERSION 3.15)
 
-add_library(client-msg-handling
+add_library(sockwriter
     databuf.cpp
     databuf.hpp
+    msgqueue.hpp
+    msgqueue.cpp
+    msgsender.hpp
+    msgsender.cpp
 )
 
-add_executable(TEST-databuf tests/TEST-safesock.cpp)
+add_executable(TEST-databuf tests/TEST-databuf.cpp)
 
 add_test(
     NAME databuf

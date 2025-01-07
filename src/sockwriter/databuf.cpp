@@ -4,9 +4,6 @@
 
 #include "databuf.hpp"
 #include <stdlib.h>
-#include <fcntl.h>
-#include <sys/fcntl.h>
-#include <sys/errno.h>
 #include <new>
 
 DataBuf::DataBuf(size_t len) : len(len) {
