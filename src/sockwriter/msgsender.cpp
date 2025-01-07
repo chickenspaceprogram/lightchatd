@@ -4,7 +4,16 @@
 
 #include "msgsender.hpp"
 #include <sys/epoll.h>
+#include <unistd.h>
+
+
+static const struct epoll_event EPOLL_WRITE_EVENT = {.events = EPOLLOUT | EPOLLRDHUP | EPOLLET};
+
+
 MsgSender::MsgSender() {
     epoll_fd = epoll_create1(0);
+}
 
+MsgSender::~MsgSender() {
+    close(epoll_fd);
 }
