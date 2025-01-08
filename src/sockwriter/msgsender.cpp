@@ -51,3 +51,19 @@ int MsgSender::add(int fd) {
     struct epoll_event fd_event = EPOLL_WRITE_EVENT(fd);
     return epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &fd_event);
 }
+
+int MsgSender::remove(int fd) {
+    errno = 0;
+    queue_map.erase(fd);
+    return epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, NULL);
+}
+
+void MsgSender::send(int fd, DataBuf &msg) {
+    MsgQueue &fd_queue = queue_map[fd];
+    fd_queue.addMsg(msg);
+    MsgSendStatus status;
+    do {
+        status = fd_queue.trySendMsg();
+    } while (status == MsgSendStatus::NotFullySent);
+}
+
