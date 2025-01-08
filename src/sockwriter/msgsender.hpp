@@ -4,10 +4,12 @@
 
 #pragma once
 
-#include "databuf.hpp"
 #include <unordered_map>
+#include <mutex>
+#include <thread>
 #include "msgqueue.hpp"
-
+#include "databuf.hpp"
+// A mostly-thread-safe automatic message sender. 
 
 class MsgSender {
     public:
@@ -17,8 +19,11 @@ class MsgSender {
         int add(int fd);
         int remove(int fd);
     private:
+        void sender(void);
         std::unordered_map<int, MsgQueue> queue_map;
         int epoll_fd;
-        
-
+        std::mutex map_mutex;
+        std::thread worker_thread;
+        int child_pipe_fd; // a pipe is used to notify the child process when it needs to end
+        int parent_pipe_fd;
 };
