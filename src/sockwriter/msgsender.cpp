@@ -28,8 +28,8 @@ MsgSender::MsgSender() {
     child_pipe_fd = temp_arr[0];
     
     // adding pipe to epoll
-    struct epoll_event pipe_write_event = EPOLL_WRITE_EVENT(child_pipe_fd);
-    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, child_pipe_fd, &pipe_write_event)) {
+    struct epoll_event pipe_read_event = {.events = EPOLLIN, .data = {.fd = child_pipe_fd}};
+    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, child_pipe_fd, &pipe_read_event)) {
         throw std::system_error(errno, std::generic_category());
     }
     // creating worker thread
@@ -38,8 +38,10 @@ MsgSender::MsgSender() {
 
 MsgSender::~MsgSender() {
     char buf[1] = {'a'};
-    write(parent_pipe_fd, buf, 1); // sends something to the child and unblocks the epoll(), allowing the child to notice and return
+    write(parent_pipe_fd, buf, 1); // sends some data to the child and unblocks the epoll(), allowing the child to notice and return
     worker_thread.join(); // waiting for worker thread to wrap up
+    close(parent_pipe_fd);
+    close(child_pipe_fd);
     close(epoll_fd); // now we can close the epoll since the worker isn't actively waiting on it
 }
 
