@@ -48,6 +48,9 @@ MsgSendStatus MsgQueue::trySendMsg() {
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
             return MsgSendStatus::SendWouldBlock;
         }
+        else if (errno == EPIPE) {
+            return MsgSendStatus::ReaderClosed;
+        }
         else {
             throw std::system_error(errno, std::generic_category());
         }

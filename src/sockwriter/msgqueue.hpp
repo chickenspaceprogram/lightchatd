@@ -14,6 +14,7 @@ enum class MsgSendStatus {
     NotFullySent,
     SendWouldBlock,
     NoMsgInQueue,
+    ReaderClosed,
 };
 
 

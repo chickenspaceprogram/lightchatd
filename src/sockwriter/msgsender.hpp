@@ -16,7 +16,7 @@ class MsgSender {
         MsgSender();
         ~MsgSender();
         // the following return -1 on error and set errno
-        void send(int fd, DataBuf &msg);
+        int send(int fd, DataBuf &msg);
         int add(int fd);
         int remove(int fd);
     private:
