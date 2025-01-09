@@ -10,7 +10,7 @@
 #include <sys/errno.h>
 #include <unistd.h>
 #include <fcntl.h>
-
+#include <stdio.h> // no i haven't learned C++ io yet why do you ask
 
 #include "listener.hpp"
 
@@ -36,6 +36,7 @@ PortListener::PortListener(const char *port, int backlog) : backlog(backlog), po
     int getaddrinfo_status = getaddrinfo(NULL, port, &port_addrinfo_hints, &port_addrinfo_list);
     
     if (getaddrinfo_status != 0) {
+        fprintf(stderr, (const char *)"ERROR: getaddrinfo failed in ./src/listener/listener.cpp"\n);
         throw std::system_error(getaddrinfo_status, std::generic_category()); // if getaddrinfo fails, something is borked
                                                                               // exceptions are kinda bad but in this case we just want the program to end and maybe print an error message letting the server admin know they have a skill issue
     }
@@ -53,6 +54,7 @@ PortListener::PortListener(const char *port, int backlog) : backlog(backlog), po
         
         // allows for us to reuse a port even if another process still holds onto the socket after exiting
         if (setsockopt(socket_descriptor, SOL_SOCKET, SO_REUSEADDR, &_true, sizeof(int)) != 0) {
+            fprintf(stderr, (const char *)"ERROR: setsockopt failed in ./src/listener/listener.cpp\n");
             throw std::system_error(errno, std::generic_category()); // if we cant set the sockopt a major issue has occurred
         }
 
@@ -66,9 +68,11 @@ PortListener::PortListener(const char *port, int backlog) : backlog(backlog), po
 
     freeaddrinfo(port_addrinfo_list);
     if (success_flag == false) {
+        fprintf(stderr, "ERROR: could not bind to port. Failed in ./src/listener/listener.cpp\n");
         throw std::system_error(0, std::generic_category()); // we looped through all the connections in the linked list and still didn't succeed in connecting
     }
     if (listen(socket_descriptor, backlog) != 0) {
+        fprintf(stderr, "ERROR: could not listen on port. Failed in ./src/listener/listener.cpp\n");
         throw std::system_error(errno, std::generic_category()); // if listen() fails something major went wrong
     }
 }
@@ -85,6 +89,7 @@ int PortListener::getNewConnection() {
         if (errno == EWOULDBLOCK || errno == EAGAIN) {
             return -1;
         }
+        fprintf(stderr, "ERROR: could not accept connection. Failed in ./src/listener/listener.cpp\n");
         throw std::system_error(errno, std::generic_category());
     }
 
@@ -97,6 +102,7 @@ void PortListener::setBlockingState(bool blocking_state) {
     int fd_status_flags = fcntl(socket_descriptor, F_GETFL, 1234);
 
     if (fd_status_flags == -1) {
+        fprintf(stderr, "ERROR: could not set fd status flags. Failed in ./src/listener/listener.cpp\n");
         throw std::system_error(errno, std::generic_category());
     }
 
@@ -110,6 +116,7 @@ void PortListener::setBlockingState(bool blocking_state) {
     fd_status_flags = fcntl(socket_descriptor, F_SETFL, fd_status_flags);
           
     if (fd_status_flags == -1) {
+        fprintf(stderr, "ERROR: could not set fd status flags. Failed in ./src/listener/listener.cpp\n");
         throw std::system_error(errno, std::generic_category());
     }
 }

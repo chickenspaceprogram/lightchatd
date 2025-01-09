@@ -19,12 +19,14 @@ MsgSender::MsgSender() {
     signal(SIGPIPE, SIG_IGN); // just ignore sigpipe, this forces write/send to return an error instead of terminating the thread and being annoying
     errno = 0;
     if ((epoll_fd = epoll_create1(0)) == -1) {
+        fprintf(stderr, "ERROR: could not create epoll instance. Failed in ./src/sockwriter/msgsender.cpp\n");
         throw std::system_error(errno, std::generic_category());
     } 
     int temp_arr[2] = {0};
     
     // creating pipe that allows us to send a message to the thread and unblock the epoll when desired
     if (pipe(temp_arr) == -1) {
+        fprintf(stderr, "ERROR: could not create pipe. Failed in ./src/sockwriter/msgsender.cpp\n");
         throw std::system_error(errno, std::generic_category());
     }
     parent_pipe_fd = temp_arr[1];
@@ -32,7 +34,8 @@ MsgSender::MsgSender() {
     
     // adding pipe to epoll
     struct epoll_event pipe_read_event = {.events = EPOLLIN, .data = {.fd = child_pipe_fd}};
-    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, child_pipe_fd, &pipe_read_event)) {
+    if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, child_pipe_fd, &pipe_read_event) == -1) {
+        fprintf(stderr, "ERROR: could not add fd to epoll. Failed in ./src/sockwriter/msgsender.cpp\n");
         throw std::system_error(errno, std::generic_category());
     }
     // creating worker thread
@@ -73,6 +76,7 @@ int MsgSender::send(int fd, DataBuf &msg) {
     if (status == MsgSendStatus::ReaderClosed) {
         int temp_errno = errno;
         if (remove(fd) == -1) {
+            fprintf(stderr, "ERROR: the reader closed, but the fd could not be removed from MsgSender for some reason. Failed in ./src/sockwriter/msgsender.cpp\n");
             throw std::system_error(errno, std::generic_category()); // this does ignore the EPIPE but EPIPE is probably the less important error here
         }
         errno = temp_errno;

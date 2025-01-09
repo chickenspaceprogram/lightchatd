@@ -26,6 +26,7 @@ int make_fd_nonblocking(int fd) {
 
 MsgQueue::MsgQueue(int fd) : fd(fd) {
     if (make_fd_nonblocking(fd) != 0) {
+        fprintf(stderr, "ERROR: could not make fd nonblocking. Failed in ./src/sockwriter/msgqueue.cpp\n");
         throw std::system_error(errno, std::generic_category());
     }
 }
@@ -52,6 +53,7 @@ MsgSendStatus MsgQueue::trySendMsg() {
             return MsgSendStatus::ReaderClosed;
         }
         else {
+            fprintf(stderr, "ERROR: an error occurred when attempting to send data. Failed in ./src/sockwriter/msgqueue.cpp\n");
             throw std::system_error(errno, std::generic_category());
         }
     }
