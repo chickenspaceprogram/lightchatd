@@ -25,9 +25,9 @@
 
 PortListener::PortListener(const char *port, int backlog) : backlog(backlog), port(port), fd_is_blocking(true) {
     struct addrinfo port_addrinfo_hints = {
+        .ai_flags = AI_PASSIVE, // this, in combination with passing NULL as the first parameter to getaddrinfo(3), makes getaddrinfo return sockaddrs that are suitable for a server
         .ai_family = AF_UNSPEC, // .ai_family determines whether we are using IPv4 or IPv6, in this case we don't care
         .ai_socktype = SOCK_STREAM, // .ai_socktype determines whether the socket is TCP or UDP
-        .ai_flags = AI_PASSIVE, // this, in combination with passing NULL as the first parameter to getaddrinfo(3), makes getaddrinfo return sockaddrs that are suitable for a server
     };
     struct addrinfo *port_addrinfo_list = NULL; // setting this to NULL for sanity reasons
     int _true = 1; // necessary for setsockopt()
@@ -36,7 +36,7 @@ PortListener::PortListener(const char *port, int backlog) : backlog(backlog), po
     int getaddrinfo_status = getaddrinfo(NULL, port, &port_addrinfo_hints, &port_addrinfo_list);
     
     if (getaddrinfo_status != 0) {
-        fprintf(stderr, (const char *)"ERROR: getaddrinfo failed in ./src/listener/listener.cpp"\n);
+        fprintf(stderr, (const char *)"ERROR: getaddrinfo failed in ./src/listener/listener.cpp\n");
         throw std::system_error(getaddrinfo_status, std::generic_category()); // if getaddrinfo fails, something is borked
                                                                               // exceptions are kinda bad but in this case we just want the program to end and maybe print an error message letting the server admin know they have a skill issue
     }

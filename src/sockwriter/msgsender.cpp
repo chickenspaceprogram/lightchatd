@@ -1,5 +1,5 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
+// License, ov. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 #include <signal.h>
@@ -10,6 +10,8 @@
 #include <system_error>
 #include "msgsender.hpp"
 #include "msgqueue.hpp"
+
+#define loop while(1) // I like Rust's syntax for this so I'm using it here
 
 
 #define EPOLL_WRITE_EVENT(fd_value)  {.events = EPOLLOUT | EPOLLRDHUP | EPOLLET, .data = {.fd = (int)(fd_value)}} // on a write event for this fd, this struct will get returned by epoll and we want to know which fd it is
@@ -54,9 +56,11 @@ MsgSender::~MsgSender() {
 
 int MsgSender::add(int fd) {
     errno = 0;
-    queue_map.emplace(fd, fd); // hopefully maybe works idk
     struct epoll_event fd_event = EPOLL_WRITE_EVENT(fd);
-    return epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &fd_event);
+    int ep_ret_val = epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &fd_event);
+    std::lock_guard<std::shared_mutex> lock{map_mutex};
+    queue_map.emplace(fd, fd); // hopefully maybe works idk
+    return ep_ret_val;
 }
 
 int MsgSender::remove(int fd) {
@@ -86,3 +90,31 @@ int MsgSender::send(int fd, DataBuf &msg) {
     return 0;
 }
 
+void MsgSender::sender(void) {
+    int epoll_return_val;
+    struct epoll_event event;
+    errno = 0;
+    MsgSendStatus status = MsgSendStatus::Success;
+    loop {
+        epoll_return_val = epoll_wait(epoll_fd, &event, 1, -1);
+
+        if (epoll_return_val == -1) {
+            perror("MsgSender::sender epoll_wait() failed");
+            return;
+        }
+        if (event.data.fd == child_pipe_fd) {
+            return; // we got sent a message from the parent thread to return
+        }
+
+        if (queue_map[event.data.fd].isEmpty()) {
+            continue; // no messages to send to thread, just continue and wait on the epoll again
+        }
+
+        do {
+            status = queue_map[event.data.fd].trySendMsg();
+            
+        } while (status != MsgSendStatus::SendWouldBlock);
+
+
+    }
+}
