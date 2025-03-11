@@ -17,3 +17,12 @@
 # along with lightchatd. If not, see <https://www.gnu.org/licenses/>. 
 
 cmake_minimum_required(VERSION 3.15)
+
+add_executable(test-buffer test-buffer.c relassert.h)
+
+target_link_libraries(test-buffer PRIVATE buffer)
+
+add_test(
+    NAME test-buffer
+    COMMAND $<TARGET_FILE:test-buffer>
+)

@@ -29,8 +29,8 @@ static size_t min_buf_size(size_t data_len) {
 
     size_t result = 1;
     while (data_len != 0) {
-        data_len <<= 1;
-        result >>= 1;
+        data_len >>= 1;
+        result <<= 1;
     }
     return result;
 }
@@ -58,6 +58,8 @@ void *buffer_reserve(struct buffer *buf, size_t bytes_to_reserve) {
         free(buf->alloc_start);
         buf->alloc_start = temp;
         buf->capacity = temp_capacity;
+        buf->end_position -= buf->start_position;
+        buf->start_position = 0;
 
         temp = (char *)buf->alloc_start + buf->end_position; // stupid
     }

@@ -16,6 +16,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with lightchatd. If not, see <https://www.gnu.org/licenses/>. 
 
-#include "../buffer.h"
+#pragma once
 
+#include <stdlib.h>
+
+#define relassert(assertion) if (!(assertion)) {abort();}
 
