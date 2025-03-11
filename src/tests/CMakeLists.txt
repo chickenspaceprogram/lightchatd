@@ -17,8 +17,3 @@
 # along with lightchatd. If not, see <https://www.gnu.org/licenses/>. 
 
 cmake_minimum_required(VERSION 3.15)
-
-add_library(buffer
-    buffer.h
-    buffer.c
-}
