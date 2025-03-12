@@ -24,7 +24,7 @@
 
 static size_t min_buf_size(size_t data_len) {
     if (data_len == 0) {
-        return 0;
+        return 1;
     }
 
     size_t result = 1;
@@ -80,6 +80,9 @@ size_t buffer_bytes_readable(struct buffer *buf) {
 
 void buffer_read(struct buffer *buf, size_t bytes_read) {
     buf->start_position += bytes_read;
+    if (buf->start_position == buf->end_position) {
+        buffer_free(buf);
+    }
 }
 
 void buffer_new(struct buffer *buf) {

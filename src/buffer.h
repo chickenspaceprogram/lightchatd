@@ -52,7 +52,7 @@ void buffer_write(struct buffer *buf, size_t bytes_written);
 
 /*
  * Gets a pointer to the start of the buffer.
- * If the buffer is a new buffer and nothing has been written to it, NULL will be returned. Otherwise, it is guaranteed that NULL will not be returned.
+ * If the buffer is empty, NULL will be returned. Otherwise, it is guaranteed that NULL will not be returned.
  */
 void *buffer_start(struct buffer *buf);
 
