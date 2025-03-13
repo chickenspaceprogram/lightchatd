@@ -20,8 +20,8 @@ cmake_minimum_required(VERSION 3.15)
 project(
     lightchatd
     VERSION 0.1
-    DESCRIPTION "A multithreaded chat server daemon, written in C."
-    LANGUAGES C
+    DESCRIPTION "A multithreaded chat server daemon, written in C++."
+    LANGUAGES CXX
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

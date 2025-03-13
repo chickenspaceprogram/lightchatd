@@ -20,6 +20,6 @@ cmake_minimum_required(VERSION 3.15)
 
 add_subdirectory(tests)
 add_library(buffer
-    buffer.h
-    buffer.c
+    buffer.hpp
+    buffer.cpp
 )
