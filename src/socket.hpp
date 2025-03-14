@@ -38,13 +38,7 @@ class SocketHandler {
     SocketHandler &operator=(const SocketHandler &) = delete;
 
     SocketHandler(SocketHandler &&handler) : send_buf(std::move(handler.send_buf)), recv_buf(std::move(handler.recv_buf)), fd(handler.fd) { handler.fd = -1; }
-    SocketHandler &operator=(SocketHandler &&handler) {
-        send_buf = std::move(handler.send_buf);
-        recv_buf = std::move(handler.recv_buf);
-        fd = handler.fd;
-        handler.fd = -1;
-        return *this;
-    }
+    SocketHandler &operator=(SocketHandler &&handler);
     ~SocketHandler() { close(fd); }
 
     /*

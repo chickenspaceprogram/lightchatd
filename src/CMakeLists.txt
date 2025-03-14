@@ -19,7 +19,9 @@
 cmake_minimum_required(VERSION 3.15)
 
 add_subdirectory(tests)
-add_library(buffer
+add_library(socket
     buffer.hpp
     buffer.cpp
+    socket.hpp
+    socket.cpp
 )
