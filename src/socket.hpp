@@ -46,7 +46,7 @@ class SocketHandler {
      * If the socket blocks, the data is added to `sock_handler->send_buf`.
      * If there is already data in `sock_handler->send_buf`, then the data will be appended  to that buffer without calling `send(2)`. 
      */
-    int write(void *data, std::size_t data_len);
+    int write(const void *data, std::size_t data_len);
     
     /*
      * Sends data from the socket until the data is fully sent or EAGAIN/EWOULDBLOCK is returned.
