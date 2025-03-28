@@ -21,6 +21,7 @@
 #include <sys/types.h>
 #include <utility>
 #include <unistd.h>
+#include <sys/socket.h>
 #include "buffer.hpp"
 
 namespace SockLib {
@@ -39,7 +40,7 @@ class SocketHandler {
 
     SocketHandler(SocketHandler &&handler) : send_buf(std::move(handler.send_buf)), recv_buf(std::move(handler.recv_buf)), fd(handler.fd) { handler.fd = -1; }
     SocketHandler &operator=(SocketHandler &&handler);
-    ~SocketHandler() { close(fd); }
+    ~SocketHandler() { shutdown(fd, SHUT_RDWR); }
 
     /*
      * Attempts to write `data` to the socket owned by `sock_handler`.
