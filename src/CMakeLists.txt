@@ -4,5 +4,6 @@
 
 cmake_minimum_required(VERSION 3.15)
 
-add_subdirectory(parser)
-add_subdirectory(listener)
+add_library(socket_handling event.hpp 
+add_executable(pain main.cpp)
+

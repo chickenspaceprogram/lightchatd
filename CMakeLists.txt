@@ -6,10 +6,12 @@ cmake_minimum_required(VERSION 3.15)
 project(
     chatservd
     VERSION 0.1
-    DESCRIPTION "A multithreaded chat server daemon, written in C."
+    DESCRIPTION "A multithreaded chat server daemon, written in C++ with the libevent library."
     LANGUAGES CXX
 )
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD 17)
-enable_testing()
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_FLAGS "-levent_core") # bruteforcing this because for some unknown reason fedora's libevent-devel package doesn't install the fucking cmake config files needed for find_package to work. 
+
+include(CTest)
 add_subdirectory(src)
