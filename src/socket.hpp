@@ -154,7 +154,7 @@ class InputBuffer {
     static constexpr std::size_t MAX_NUMBER_EINTR = 256;
 };
 
-class User : public Event {
+class User {
     public:
     void send(std::shared_ptr<struct iovec>);
     void operator()(evutil_socket_t fd, short what) {

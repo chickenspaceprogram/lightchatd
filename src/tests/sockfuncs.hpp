@@ -1,5 +1,13 @@
 #pragma once
 #include <sys/types.h>
+#include <sys/uio.h>
+
+// symbols defined here will overwrite symbols from libc when everything is linked together
+// this effectively replaces read/write/readv/writev with userspace versions that just check for invalid memory accesses, proper error handling, etc.
+// to ensure that these functions are equivalent to those they replace it's necessary to have a pile of globals that can be modified for testing purposes
+// also, these tests really ought to be run with valgrind to detect invalid memory accesses
+//
+// idk whether this will work when compiled with MSVC, but it's not my fault MSVC sucks
 
 extern "C" {
 
@@ -19,7 +27,6 @@ void seed_rand(void);
 // the user will be allowed to read up until they call a read with more than this value, at which point they'll do a partial read and will from then on get EWOULDBLOCK
 //
 // if this is 0, either EWOULDBLOCK or EAGAIN will be returned
-// if this is -1, a random error (not EWOULDBLOCK/EAGAIN) will be returned
 extern size_t num_to_read; 
 // this counter is incremented by 1 whenever read() or readv() is called
 extern size_t total_num_reads;
