@@ -60,6 +60,38 @@ ssize_t read(int fd, void *buf, size_t count) {
     return num_read;
 }
 
+ssize_t write(int fd, void *buf, size_t count) {
+    validate_space(buf, count); // validate space first, the entire buf should be valid regardless if we use it
+    if (times_to_throw_eintr > 0) {
+        errno = EINTR;
+        --times_to_throw_eintr;
+        return -1;
+    }
+    if (cause_write_error) {
+        errno = EBADF;
+        return -1;
+    }
+    if (num_to_write == 0) {
+        errno = (rand() % 2 == 0) ? EAGAIN : EWOULDBLOCK; // alternate returning EAGAIN/EWOULDBLOCK to check for portability
+        return -1;
+    }
+    size_t max_writeable = (count > num_to_write) ? num_to_write : count;
+    size_t num_written = 0;
+    if (do_random_size_writes) {
+        num_written = rand() % max_writeable + 1;
+    }
+    else {
+        num_written = max_writeable;
+    }
+    num_to_write -= num_written;
+    return num_written;
+}
 
+
+ssize_t readv(int fd, const struct iovec *iov, int iovcnt) {
+    size_t total = 0;
+    for (int i = 0; i < iovcnt; ++i) {
+    }
+}
 
 }

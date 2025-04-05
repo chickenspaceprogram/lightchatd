@@ -25,13 +25,17 @@ extern size_t num_to_read;
 extern size_t total_num_reads;
 // makes reads have random, positive sizes
 extern bool do_random_size_reads;
+// will make read()/readv() always return EBADF
+extern bool cause_read_error;
 
 extern size_t num_to_write; // same as num_to_read but for writes
 extern size_t total_num_writes; // same as total_num_reads but for writes
 extern bool do_random_size_writes; // same as do_random_size_reads but for writes
+extern bool cause_write_error;
 
 // if this value is 0, nothing happens
 // if this value is greater than 0, it is decremented on a call to read/write/readv/writev and EINTR is thrown
+// this takes precedence over cause_read_error/cause_write_error
 extern size_t times_to_throw_eintr;
 }
 
