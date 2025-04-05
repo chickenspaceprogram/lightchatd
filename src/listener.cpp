@@ -23,7 +23,20 @@ Listener::ExitStatus Listener::stopListening() {
 }
 
 Listener::ExitStatus Listener::add(std::shared_ptr<Event> event, evutil_socket_t fd, short when_to_notify) {
-    
+    auto ev = std::pair(event, event_new(
+        event_base, 
+        fd,
+        when_to_notify, 
+        +[](evutil_socket_t fd, short what, void *data) { // god i love lambdas
+            Event *ev = (Event *)data;
+            ev->operator()(fd, what);
+        }, 
+        &(*event)));
+    if (ev.second == nullptr) {
+        return BackendErr;
+    }
+    events[std::pair(fd, when_to_notify)] = ev;
+    return ExitedNormally;
 }
 
 bool operator<(std::pair<evutil_socket_t, short> a, std::pair<evutil_socket_t, short> b) {

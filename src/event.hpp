@@ -18,8 +18,8 @@ class Event {
         //
         // this ...sorta elegant? syntax is made possible by C++ 23. previously you'd have to template this class and inherit the template, basically doing Derived : Base<Derived>
     template <typename DerivedEvent>
-    void operator()(this DerivedEvent &&self, evutil_socket_t fd, short what) {
-        self(fd, what);
+    void operator()(this DerivedEvent *self, evutil_socket_t fd, short what) {
+        self->operator()(fd, what);
     }
 };
 

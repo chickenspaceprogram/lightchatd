@@ -4,6 +4,6 @@
 
 cmake_minimum_required(VERSION 3.15)
 
-add_library(socket_handling event.hpp 
-add_executable(pain main.cpp)
+add_library(sockets socket.cpp socket.hpp)
+add_library(events event.hpp listener.cpp listener.hpp)
 
