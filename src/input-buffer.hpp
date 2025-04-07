@@ -4,6 +4,9 @@
 #include <array>
 #include <sys/uio.h>
 
+
+#include <iostream>
+
 template <size_t buffer_size>
 class InputBuffer {
     private:
@@ -34,34 +37,44 @@ class InputBuffer {
         if (buffer_full) {
             return 0;
         }
-        if (end < start || start == 0) {
-            ssize_t retval = read(fd, buffer.data() + end, start - end);
-            if (retval == -1 || retval == 0) {
-                return retval;
-            }
-            end += retval;
-            if (start == end) {
-                buffer_full = true;
-            }
+        ssize_t retval = 0;
+        if (end == start) {
+            end = 0;
+            start = 0;
+            retval = read(fd, buffer.data(), buffer_size);
+        }
+        else if (end < start) {
+            retval = read(fd, buffer.data() + end, start - end);
+        }
+        else if (start == 0) { // implies end > start, since end != start
+            retval = read(fd, buffer.data() + end, buffer_size - end);
         }
         else {
             std::array<iovec, 2> iovecs = {
                 iovec { .iov_base = buffer.data() + end, .iov_len = buffer_size - end },
                 iovec { .iov_base = buffer.data(), .iov_len = start } 
             };
-            ssize_t retval = readv(fd, iovecs.data(), 2);
-            if (retval == -1 || retval == 0) {
-                return retval;
-            }
-            end = mod(end + retval);
-            if (start == end) {
-                buffer_full = true;
-            }
+            std::cout << "readamt0=" << buffer_size - end << ",readamt1="<< start << std::endl;
+            retval = readv(fd, iovecs.data(), 2);
         }
+
+
+
+        if (retval == -1 || retval == 0) {
+            return retval;
+        }
+        end = mod(end + retval);
+        if (start == end) {
+            buffer_full = true;
+        }
+        return retval;
     }
 
     constexpr void remove_front(size_t amount) noexcept {
         start = mod(start + amount);
+        if (amount != 0) {
+            buffer_full = false;
+        }
     }
 
     private:

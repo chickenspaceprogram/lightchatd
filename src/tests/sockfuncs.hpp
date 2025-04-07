@@ -10,12 +10,15 @@
 // idk whether this will work when compiled with MSVC, but it's not my fault MSVC sucks
 
 extern "C" {
+#ifndef HIDE_READ_WRITE
 
 ssize_t read(int fd, void *buf, size_t count);
 ssize_t write(int fd, void *buf, size_t count);
 
 ssize_t readv(int fd, const struct iovec *iov, int iovcnt);
 ssize_t writev(int fd, const struct iovec *iov, int iovcnt);
+
+#endif
 
 void seed_rand(void);
 

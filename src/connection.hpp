@@ -32,6 +32,7 @@ class Connection {
     //
     // Reads from the associated file descriptor until the input buffer fills, the fd blocks, or there is an error.
     // If a fatal error occurs, -1 will be returned, and you should allow this connection to terminate.
+    // If the attempt to receive succeeds, the total amount of data in the input buffer will be returned.
     // You can check whether the input buffer is full using the Connection::recv_buf_full method.
     ssize_t receive() noexcept;
 
@@ -106,11 +107,9 @@ template <std::size_t MAX_SIZE, std::size_t MAX_EINTR>
 ssize_t Connection<MAX_SIZE, MAX_EINTR>::receive() noexcept {
     ssize_t amount_read = 0;
     size_t num_eintr = 0;
-    while (true) {
-        if (inbuf.full()) {
-            return inbuf.size(); // input buffer is full, just return and let the caller deal with it
-        }
+    while (!inbuf.full()) {
         ssize_t temp = inbuf.append_read(fd);
+        std::cout << "size=" << inbuf.size() << ",readamt=" << temp << std::endl;
         if (temp == -1) {
             if (errno == EINTR && num_eintr < MAX_EINTR) {
                 ++num_eintr; // a signal interrupted us, just try again
@@ -125,5 +124,6 @@ ssize_t Connection<MAX_SIZE, MAX_EINTR>::receive() noexcept {
             }
         }
     }
+    return inbuf.size();
 }
 

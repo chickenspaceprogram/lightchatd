@@ -5,6 +5,5 @@
 cmake_minimum_required(VERSION 3.16)
 
 add_subdirectory(tests)
-add_library(sockets socket.cpp socket.hpp)
-add_library(events event.hpp listener.cpp listener.hpp)
+add_library(sockets socket.cpp socket.hpp message.hpp connection.hpp input-buffer.hpp)
 

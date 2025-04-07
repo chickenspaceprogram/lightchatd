@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <cerrno>
+#include <cassert>
 #include "sockfuncs.hpp"
 
 extern "C" {
@@ -58,6 +59,7 @@ ssize_t read(int fd, void *buf, size_t count) {
         num_read = max_readable;
     }
     num_to_read -= num_read;
+    assert(num_read > 0);
     return num_read;
 }
 
@@ -86,6 +88,7 @@ ssize_t write(int fd, void *buf, size_t count) {
         num_written = max_writeable;
     }
     num_to_write -= num_written;
+    assert(num_written > 0);
     return num_written;
 }
 
@@ -122,6 +125,7 @@ ssize_t readv(int fd, const struct iovec *iov, int iovcnt) {
         num_read = max_readable;
     }
     num_to_read -= num_read;
+    assert(num_read > 0);
     return num_read;
 }
 
@@ -157,6 +161,7 @@ ssize_t writev(int fd, const struct iovec *iov, int iovcnt) {
         num_written = max_writeable;
     }
     num_to_write -= num_written;
+    assert(num_written > 0);
     return num_written;
 }
 
