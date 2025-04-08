@@ -42,7 +42,33 @@ static void test_connection_read(void) {
     total_num_reads = 0;
 }
 
+static void test_connection_write(void) {
+    num_to_write = 0;
+    Connection<512> conn(1234);
+    conn.add_to_send(std::shared_ptr<Message>(new Message("here is a message\n")));
+    conn.add_to_send(std::shared_ptr<Message>(new Message("here is another message\n")));
+    conn.add_to_send(std::shared_ptr<Message>(new Message("here is one more message\n")));
+    conn.add_to_send(std::shared_ptr<Message>(new Message("here is dsafdsafdsafdsa a message\n")));
+
+    assert(conn.flush_send() == 0);
+    cause_write_error = true;
+    assert(conn.flush_send() == -1);
+    cause_write_error = false;
+    times_to_throw_eintr = 129;
+    num_to_write = 20;
+    errno = 0;
+    assert(conn.flush_send() == -1 && errno == EINTR);
+    times_to_throw_eintr = 50;
+    assert(conn.flush_send() == 20);
+    assert(conn.flush_send() == 0);
+    num_to_write = 123456;
+    ssize_t val = conn.flush_send();
+    assert(val > 0);
+    assert(conn.flush_send() == 0);
+}
+
 
 int main(void) {
     test_connection_read();
+    test_connection_write();
 }

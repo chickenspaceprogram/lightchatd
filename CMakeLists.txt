@@ -11,6 +11,7 @@ project(
 )
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS "-levent_core") # bruteforcing this because for some unknown reason fedora's libevent-devel package doesn't install the cmake config files needed for find_package to work
 if(NOT MSVC)
     set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wpedantic -Werror")

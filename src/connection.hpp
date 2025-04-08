@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <deque>
+#include <memory>
 #include "message.hpp"
 #include "input-buffer.hpp"
 
@@ -109,7 +110,6 @@ ssize_t Connection<MAX_SIZE, MAX_EINTR>::receive() noexcept {
     size_t num_eintr = 0;
     while (!inbuf.full()) {
         ssize_t temp = inbuf.append_read(fd);
-        std::cout << "size=" << inbuf.size() << ",readamt=" << temp << std::endl;
         if (temp == -1) {
             if (errno == EINTR && num_eintr < MAX_EINTR) {
                 ++num_eintr; // a signal interrupted us, just try again
