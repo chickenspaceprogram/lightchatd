@@ -47,6 +47,8 @@ class Connection {
     constexpr char &operator[](std::size_t index) noexcept { return inbuf[index]; }
     constexpr const char &operator[](std::size_t index) const noexcept { return inbuf[index]; }
 
+    evutil_socket_t get_fd() const { return fd; }
+
     // have add to poll fn
     private:
     InputBuffer<MAX_SIZE> inbuf;
@@ -109,7 +111,10 @@ ssize_t Connection<MAX_SIZE, MAX_EINTR>::receive() noexcept {
     ssize_t amount_read = 0;
     size_t num_eintr = 0;
     while (!inbuf.full()) {
-        ssize_t temp = inbuf.append_read(fd);
+        ssize_t temp = inbuf.append_read(fd).value();
+        if (temp == 0) {
+            return 0;
+        }
         if (temp == -1) {
             if (errno == EINTR && num_eintr < MAX_EINTR) {
                 ++num_eintr; // a signal interrupted us, just try again

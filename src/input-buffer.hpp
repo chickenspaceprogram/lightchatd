@@ -1,6 +1,7 @@
 #pragma once
 #include <cstddef>
 #include <event2/event.h>
+#include <optional>
 #include <array>
 #include <sys/uio.h>
 
@@ -33,9 +34,9 @@ class InputBuffer {
     constexpr bool empty() const noexcept { return !buffer_full && start == end; }
     constexpr bool full() const noexcept { return buffer_full; }
 
-    ssize_t append_read(evutil_socket_t fd) noexcept {
+    std::optional<ssize_t> append_read(evutil_socket_t fd) noexcept {
         if (buffer_full) {
-            return 0;
+            return std::optional<ssize_t>(std::nullopt);
         }
         ssize_t retval = 0;
         if (end == start) {
@@ -58,16 +59,14 @@ class InputBuffer {
             retval = readv(fd, iovecs.data(), 2);
         }
 
-
-
         if (retval == -1 || retval == 0) {
-            return retval;
+            return std::optional(retval);
         }
         end = mod(end + retval);
         if (start == end) {
             buffer_full = true;
         }
-        return retval;
+        return std::optional(retval);
     }
 
     constexpr void remove_front(size_t amount) noexcept {
